@@ -1,0 +1,192 @@
+{
+  "schemas": {
+    "Envelope": {
+      "type": "object",
+      "required": ["ok"],
+      "properties": {
+        "ok": {"type": "boolean"},
+        "data": {"type": "object"},
+        "error": {"type": "string"}
+      }
+    },
+    "CreateMenu": {
+      "type": "object",
+      "required": ["name", "currency", "walletId", "lightningEnabled", "manualEnabled"],
+      "properties": {
+        "name": {"type": "string", "maxLength": 120},
+        "description": {"type": "string", "maxLength": 1000},
+        "currency": {"type": "string", "maxLength": 8},
+        "walletId": {"type": "string", "maxLength": 128},
+        "lightningEnabled": {"type": "boolean"},
+        "manualEnabled": {"type": "boolean"},
+        "manualInstructions": {"type": "string", "maxLength": 1000},
+        "active": {"type": "boolean"}
+      }
+    },
+    "UpdateMenu": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string", "maxLength": 120},
+        "description": {"type": "string", "maxLength": 1000},
+        "currency": {"type": "string", "maxLength": 8},
+        "walletId": {"type": "string", "maxLength": 128},
+        "lightningEnabled": {"type": "boolean"},
+        "manualEnabled": {"type": "boolean"},
+        "manualInstructions": {"type": "string", "maxLength": 1000},
+        "active": {"type": "boolean"}
+      }
+    },
+    "CreateItem": {
+      "type": "object",
+      "required": ["name", "price"],
+      "properties": {
+        "name": {"type": "string", "maxLength": 120},
+        "description": {"type": "string", "maxLength": 1000},
+        "price": {"type": "string", "pattern": "^[0-9]+(\\.[0-9]{1,8})?$"},
+        "position": {"type": "integer", "minimum": 0},
+        "active": {"type": "boolean"},
+        "soldOut": {"type": "boolean"}
+      }
+    },
+    "UpdateItem": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string", "maxLength": 120},
+        "description": {"type": "string", "maxLength": 1000},
+        "price": {"type": "string", "pattern": "^[0-9]+(\\.[0-9]{1,8})?$"},
+        "position": {"type": "integer", "minimum": 0},
+        "active": {"type": "boolean"},
+        "soldOut": {"type": "boolean"}
+      }
+    },
+    "CreateOrder": {
+      "type": "object",
+      "required": ["checkoutToken", "items", "paymentMethod"],
+      "properties": {
+        "checkoutToken": {"type": "string", "maxLength": 160},
+        "items": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "required": ["itemId", "quantity"],
+            "properties": {
+              "itemId": {"type": "string", "maxLength": 512},
+              "quantity": {"type": "integer", "minimum": 1, "maximum": 99},
+              "note": {"type": "string", "maxLength": 500}
+            }
+          }
+        },
+        "paymentMethod": {"type": "string", "enum": ["lightning", "manual"]},
+        "customerName": {"type": "string", "maxLength": 120},
+        "customerNote": {"type": "string", "maxLength": 1000},
+        "tableLabel": {"type": "string", "maxLength": 120},
+        "locationLabel": {"type": "string", "maxLength": 120}
+      }
+    },
+    "EnvelopeResponse": {
+      "description": "A PopMenu response envelope.",
+      "content": {
+        "application/json": {"schema": {"$ref": "#/schemas/Envelope"}}
+      }
+    }
+  },
+  "routes": {
+    "list-currencies": {
+      "summary": "List currencies available for menus",
+      "operationId": "popmenu_list_currencies",
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "list-wallets": {
+      "summary": "List merchant wallets",
+      "operationId": "popmenu_list_wallets",
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "list-menus": {
+      "summary": "List merchant menus",
+      "operationId": "popmenu_list_menus",
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "create-menu": {
+      "summary": "Create a menu",
+      "operationId": "popmenu_create_menu",
+      "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/schemas/CreateMenu"}}}},
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "update-menu": {
+      "summary": "Update a menu",
+      "operationId": "popmenu_update_menu",
+      "parameters": [{"name": "menu_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/schemas/UpdateMenu"}}}},
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "list-items": {
+      "summary": "List menu items",
+      "operationId": "popmenu_list_items",
+      "parameters": [{"name": "menu_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "create-item": {
+      "summary": "Create a menu item",
+      "operationId": "popmenu_create_item",
+      "parameters": [{"name": "menu_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/schemas/CreateItem"}}}},
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "update-item": {
+      "summary": "Update a menu item",
+      "operationId": "popmenu_update_item",
+      "parameters": [{"name": "item_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/schemas/UpdateItem"}}}},
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "list-orders": {
+      "summary": "List merchant orders",
+      "operationId": "popmenu_list_orders",
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "mark-manual-paid": {
+      "summary": "Mark a manual order paid",
+      "operationId": "popmenu_mark_manual_paid",
+      "parameters": [{"name": "order_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "complete-order": {
+      "summary": "Complete an order",
+      "operationId": "popmenu_complete_order",
+      "parameters": [{"name": "order_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "cancel-order": {
+      "summary": "Cancel an order",
+      "operationId": "popmenu_cancel_order",
+      "parameters": [{"name": "order_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "get-public-menu": {
+      "summary": "Read a public menu",
+      "operationId": "popmenu_get_public_menu",
+      "parameters": [{"name": "menu_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "create-order": {
+      "summary": "Create a customer order",
+      "operationId": "popmenu_create_order",
+      "parameters": [{"name": "menu_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/schemas/CreateOrder"}}}},
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "get-order-confirmation": {
+      "summary": "Read an order confirmation",
+      "operationId": "popmenu_get_order_confirmation",
+      "parameters": [{"name": "order_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    },
+    "retry-payment": {
+      "summary": "Retry an expired payment",
+      "operationId": "popmenu_retry_payment",
+      "parameters": [{"name": "order_id", "in": "path", "required": true, "schema": {"type": "string"}}],
+      "responses": {"200": {"$ref": "#/schemas/EnvelopeResponse"}}
+    }
+  }
+}

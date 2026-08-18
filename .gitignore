@@ -1,0 +1,30 @@
+# Local runtime data and secrets
+data/
+
+# Node dependencies and logs
+dev/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated build and package artifacts
+dev/dist/
+dist/
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# AI
+AGENTS*.md
+CLAUDE*.md
+SPEC*.md
+current.md
+.agents/
+.codex/

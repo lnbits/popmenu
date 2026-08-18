@@ -1,0 +1,67 @@
+name: Build WASM extension
+
+on:
+  push:
+    paths:
+      - 'config.json'
+      - 'Makefile'
+      - 'dev/package.json'
+      - 'dev/package-lock.json'
+      - 'dev/scripts/**'
+      - 'dev/src/**'
+      - 'dev/test/**'
+      - 'static/**'
+      - 'storage/**'
+      - 'ui/**'
+      - 'wasm/lnbits-extension.wit'
+      - 'wasm/openapi.json'
+      - '.github/workflows/build.yml'
+  pull_request:
+    paths:
+      - 'config.json'
+      - 'Makefile'
+      - 'dev/package.json'
+      - 'dev/package-lock.json'
+      - 'dev/scripts/**'
+      - 'dev/src/**'
+      - 'dev/test/**'
+      - 'static/**'
+      - 'storage/**'
+      - 'ui/**'
+      - 'wasm/lnbits-extension.wit'
+      - 'wasm/openapi.json'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: dev/package-lock.json
+
+      - name: Install dependencies
+        run: npm --prefix dev ci
+
+      - name: Check source
+        run: make check
+
+      - name: Build WebAssembly component
+        run: make build
+
+      - name: Smoke-test built component
+        run: node dev/scripts/component-smoke.mjs
+
+      - name: Package and inspect install archive
+        run: |
+          node dev/scripts/package.mjs
+          node dev/scripts/package-check.mjs
+
+      - name: Check generated component exists
+        # jco output can vary across runner toolchains; successful component
+        # loading and archive hash parity are the reproducibility gates here.
+        run: test -s wasm/module.wasm

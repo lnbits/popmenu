@@ -1,0 +1,147 @@
+{
+  "id": "popmenu",
+  "name": "PopMenu",
+  "short_description": "A lightweight QR menu, Lightning checkout, and order queue.",
+  "version": "0.1.0",
+  "extension_type": "wasm",
+  "wasm": {
+    "module": "wasm/module.wasm",
+    "wit": "wasm/lnbits-extension.wit",
+    "world": "popmenu",
+    "exports": [
+      {"name": "list-currencies", "visibility": "authenticated"},
+      {"name": "list-wallets", "visibility": "authenticated"},
+      {"name": "list-menus", "visibility": "authenticated"},
+      {"name": "create-menu", "visibility": "authenticated"},
+      {"name": "update-menu", "visibility": "authenticated"},
+      {"name": "list-items", "visibility": "authenticated"},
+      {"name": "create-item", "visibility": "authenticated"},
+      {"name": "update-item", "visibility": "authenticated"},
+      {"name": "list-orders", "visibility": "authenticated"},
+      {"name": "mark-manual-paid", "visibility": "authenticated"},
+      {"name": "complete-order", "visibility": "authenticated"},
+      {"name": "cancel-order", "visibility": "authenticated"},
+      {"name": "get-public-menu", "visibility": "public"},
+      {"name": "create-order", "visibility": "public"},
+      {"name": "get-order-confirmation", "visibility": "public"},
+      {"name": "retry-payment", "visibility": "public"},
+      {"name": "handle-invoice-paid", "visibility": "event"}
+    ]
+  },
+  "events": {"onInvoicePaid": "handle-invoice-paid"},
+  "ui_routes": [
+    {"path": "/popmenu", "entrypoint": "ui/admin.html", "auth": "user"},
+    {
+      "path": "/popmenu/menu/{menu_id}",
+      "entrypoint": "ui/public.html",
+      "auth": "public",
+      "path_params": {"menu_id": "menuId"}
+    },
+    {
+      "path": "/popmenu/order/{order_id}",
+      "entrypoint": "ui/public.html",
+      "auth": "public",
+      "path_params": {"order_id": "orderId"}
+    }
+  ],
+  "api_routes": [
+    {"method": "GET", "path": "/currencies", "export": "list-currencies", "auth": "user"},
+    {"method": "GET", "path": "/wallets", "export": "list-wallets", "auth": "user"},
+    {"method": "GET", "path": "/menus", "export": "list-menus", "auth": "user"},
+    {"method": "POST", "path": "/menus", "export": "create-menu", "auth": "user"},
+    {
+      "method": "PATCH",
+      "path": "/menus/{menu_id}",
+      "export": "update-menu",
+      "auth": "user",
+      "path_params": {"menu_id": "menuId"}
+    },
+    {
+      "method": "GET",
+      "path": "/menus/{menu_id}/items",
+      "export": "list-items",
+      "auth": "user",
+      "path_params": {"menu_id": "menuId"}
+    },
+    {
+      "method": "POST",
+      "path": "/menus/{menu_id}/items",
+      "export": "create-item",
+      "auth": "user",
+      "path_params": {"menu_id": "menuId"}
+    },
+    {
+      "method": "PATCH",
+      "path": "/items/{item_id}",
+      "export": "update-item",
+      "auth": "user",
+      "path_params": {"item_id": "itemId"}
+    },
+    {"method": "GET", "path": "/orders", "export": "list-orders", "auth": "user"},
+    {
+      "method": "POST",
+      "path": "/orders/{order_id}/manual-paid",
+      "export": "mark-manual-paid",
+      "auth": "user",
+      "path_params": {"order_id": "orderId"}
+    },
+    {
+      "method": "POST",
+      "path": "/orders/{order_id}/complete",
+      "export": "complete-order",
+      "auth": "user",
+      "path_params": {"order_id": "orderId"}
+    },
+    {
+      "method": "POST",
+      "path": "/orders/{order_id}/cancel",
+      "export": "cancel-order",
+      "auth": "user",
+      "path_params": {"order_id": "orderId"}
+    },
+    {
+      "method": "GET",
+      "path": "/public/menus/{menu_id}",
+      "export": "get-public-menu",
+      "auth": "public",
+      "path_params": {"menu_id": "menuId"},
+      "ownerContext": {"table": "menus", "idParam": "menuId"}
+    },
+    {
+      "method": "POST",
+      "path": "/public/menus/{menu_id}/orders",
+      "export": "create-order",
+      "auth": "public",
+      "path_params": {"menu_id": "menuId"},
+      "ownerContext": {"table": "menus", "idParam": "menuId"}
+    },
+    {
+      "method": "GET",
+      "path": "/public/orders/{order_id}",
+      "export": "get-order-confirmation",
+      "auth": "public",
+      "path_params": {"order_id": "orderId"},
+      "ownerContext": {"table": "orders", "idParam": "orderId"}
+    },
+    {
+      "method": "POST",
+      "path": "/public/orders/{order_id}/retry",
+      "export": "retry-payment",
+      "auth": "public",
+      "path_params": {"order_id": "orderId"},
+      "ownerContext": {"table": "orders", "idParam": "orderId"}
+    }
+  ],
+  "permissions": [
+    {"id": "ext.storage.read", "description": "Read owner-scoped PopMenu data."},
+    {"id": "ext.storage.write", "description": "Write owner-scoped PopMenu data."},
+    {"id": "wallet.list", "description": "List wallets available to the merchant."},
+    {
+      "id": "wallet.create_invoice_public",
+      "description": "Create invoices only from a merchant-owned menu wallet.",
+      "policies": [{"table": "menus", "wallet_field": "wallet_id"}]
+    },
+    {"id": "utils.basic", "description": "Use LNbits currency and invoice helpers."}
+  ],
+  "openapi": "wasm/openapi.json"
+}

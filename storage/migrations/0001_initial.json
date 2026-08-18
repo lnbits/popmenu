@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "description": "Create PopMenu menu, item, order, payment attempt, and settlement tables.",
+  "operations": [
+    {
+      "op": "create_table",
+      "table": "menus",
+      "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "name", "type": "string"},
+        {"name": "description", "type": "string", "nullable": true},
+        {"name": "currency", "type": "string"},
+        {"name": "wallet_id", "type": "string"},
+        {"name": "lightning_enabled", "type": "boolean"},
+        {"name": "manual_enabled", "type": "boolean"},
+        {"name": "manual_instructions", "type": "string", "nullable": true},
+        {"name": "active", "type": "boolean"},
+        {"name": "created_at", "type": "datetime"},
+        {"name": "updated_at", "type": "datetime"}
+      ]
+    },
+    {
+      "op": "create_table",
+      "table": "items",
+      "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "menu_id", "type": "string"},
+        {"name": "name", "type": "string"},
+        {"name": "description", "type": "string", "nullable": true},
+        {"name": "price", "type": "string"},
+        {"name": "position", "type": "integer"},
+        {"name": "active", "type": "boolean"},
+        {"name": "sold_out", "type": "boolean"},
+        {"name": "created_at", "type": "datetime"},
+        {"name": "updated_at", "type": "datetime"}
+      ]
+    },
+    {
+      "op": "create_table",
+      "table": "orders",
+      "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "checkout_token", "type": "string"},
+        {"name": "menu_id", "type": "string"},
+        {"name": "order_number", "type": "string"},
+        {"name": "items", "type": "string", "list": true},
+        {"name": "total", "type": "string"},
+        {"name": "currency", "type": "string"},
+        {"name": "payment_method", "type": "string"},
+        {"name": "payment_status", "type": "string"},
+        {"name": "status", "type": "string"},
+        {"name": "fulfillment_status", "type": "string"},
+        {"name": "manual_instructions", "type": "string", "nullable": true},
+        {"name": "customer_name", "type": "string", "nullable": true},
+        {"name": "customer_note", "type": "string", "nullable": true},
+        {"name": "table_label", "type": "string", "nullable": true},
+        {"name": "location_label", "type": "string", "nullable": true},
+        {"name": "attempt_id", "type": "string", "nullable": true},
+        {"name": "created_at", "type": "datetime"},
+        {"name": "updated_at", "type": "datetime"},
+        {"name": "paid_at", "type": "datetime", "nullable": true},
+        {"name": "completed_at", "type": "datetime", "nullable": true},
+        {"name": "cancelled_at", "type": "datetime", "nullable": true}
+      ]
+    },
+    {
+      "op": "create_table",
+      "table": "payment_attempts",
+      "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "order_id", "type": "string"},
+        {"name": "menu_id", "type": "string"},
+        {"name": "payment_hash", "type": "string"},
+        {"name": "checking_id", "type": "string"},
+        {"name": "bolt11", "type": "string"},
+        {"name": "amount", "type": "string"},
+        {"name": "amount_msat", "type": "integer"},
+        {"name": "currency", "type": "string"},
+        {"name": "expires_at", "type": "datetime"},
+        {"name": "status", "type": "string"},
+        {"name": "created_at", "type": "datetime"},
+        {"name": "paid_at", "type": "datetime", "nullable": true}
+      ]
+    },
+    {
+      "op": "create_table",
+      "table": "settlements",
+      "fields": [
+        {"name": "id", "type": "string"},
+        {"name": "order_id", "type": "string"},
+        {"name": "attempt_id", "type": "string"},
+        {"name": "menu_id", "type": "string"},
+        {"name": "amount", "type": "string"},
+        {"name": "amount_msat", "type": "integer"},
+        {"name": "paid_at", "type": "datetime"}
+      ]
+    },
+    {"op": "create_index", "table": "items", "name": "items_by_menu", "field": "menu_id"},
+    {"op": "create_index", "table": "items", "name": "items_by_position", "field": "position"},
+    {"op": "create_index", "table": "orders", "name": "orders_by_menu", "field": "menu_id"},
+    {"op": "create_index", "table": "orders", "name": "orders_by_checkout_token", "field": "checkout_token"},
+    {"op": "create_index", "table": "orders", "name": "orders_by_payment_status", "field": "payment_status"},
+    {"op": "create_index", "table": "orders", "name": "orders_by_created_at", "field": "created_at"},
+    {"op": "create_index", "table": "payment_attempts", "name": "payment_attempts_by_order", "field": "order_id"},
+    {"op": "create_index", "table": "payment_attempts", "name": "payment_attempts_by_menu", "field": "menu_id"},
+    {"op": "create_index", "table": "payment_attempts", "name": "payment_attempts_by_status", "field": "status"},
+    {"op": "create_index", "table": "settlements", "name": "settlements_by_order", "field": "order_id"},
+    {"op": "create_index", "table": "settlements", "name": "settlements_by_attempt", "field": "attempt_id"}
+  ]
+}

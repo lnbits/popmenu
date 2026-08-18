@@ -1,0 +1,81 @@
+package lnbits:extension;
+
+interface host {
+  record storage-get-request { table: string, id: string }
+  record storage-get-response { data-json: option<string> }
+  record storage-set-request { table: string, data-json: string }
+  record storage-set-response { ok: bool }
+  record storage-paginated-request {
+    table: string,
+    filters-json: string,
+    search: string,
+    search-fields: list<string>,
+    sort-by: string,
+    descending: bool,
+    limit: u32,
+    offset: u32
+  }
+  record storage-paginated-response { rows-json: string, total: u64 }
+  record invoice-public-request {
+    source-id: string,
+    amount: f64,
+    currency: string,
+    memo: string,
+    extra: list<tuple<string, string>>
+  }
+  record invoice-response {
+    payment-hash: string,
+    payment-request: string,
+    checking-id: string
+  }
+  record user-wallet-summary { id: string, name: string, currency: option<string> }
+  record list-user-wallets-response { wallets: list<user-wallet-summary> }
+  record random-id-request { prefix: string }
+  record random-id-response { id: string }
+  record now-response { timestamp: u64 }
+
+  storage-get: func(request: storage-get-request) -> storage-get-response;
+  storage-set: func(request: storage-set-request) -> storage-set-response;
+  storage-get-paginated: func(request: storage-paginated-request) -> storage-paginated-response;
+  create-invoice-public: func(request: invoice-public-request) -> invoice-response;
+  list-user-wallets: func() -> list-user-wallets-response;
+  random-id: func(request: random-id-request) -> random-id-response;
+  now: func() -> now-response;
+}
+
+interface utils-currencies {
+  record currency-list-response { currencies: list<string> }
+  list-currencies: func() -> currency-list-response;
+}
+
+interface utils-lightning {
+  record bolt11-request { bolt11: string }
+  record invoice-expiry-response { expires-at: option<u64> }
+  record invoice-amount-msat-response { amount-msat: option<u64> }
+  invoice-expiry: func(request: bolt11-request) -> invoice-expiry-response;
+  invoice-amount-msat: func(request: bolt11-request) -> invoice-amount-msat-response;
+}
+
+world popmenu {
+  import host;
+  import utils-currencies;
+  import utils-lightning;
+
+  export list-currencies: func(request-json: string) -> string;
+  export list-wallets: func(request-json: string) -> string;
+  export list-menus: func(request-json: string) -> string;
+  export create-menu: func(request-json: string) -> string;
+  export update-menu: func(request-json: string) -> string;
+  export list-items: func(request-json: string) -> string;
+  export create-item: func(request-json: string) -> string;
+  export update-item: func(request-json: string) -> string;
+  export list-orders: func(request-json: string) -> string;
+  export mark-manual-paid: func(request-json: string) -> string;
+  export complete-order: func(request-json: string) -> string;
+  export cancel-order: func(request-json: string) -> string;
+  export get-public-menu: func(request-json: string) -> string;
+  export create-order: func(request-json: string) -> string;
+  export get-order-confirmation: func(request-json: string) -> string;
+  export retry-payment: func(request-json: string) -> string;
+  export handle-invoice-paid: func(event-json: string) -> string;
+}

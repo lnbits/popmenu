@@ -1,0 +1,14 @@
+{
+  "name": "lnbits-popmenu-wasm",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bundle": "node scripts/bundle.mjs",
+    "build": "npm run bundle && jco componentize dist/index.bundle.js --disable all --enable clocks --enable random --enable stdio --wit ../wasm/lnbits-extension.wit --world-name popmenu -o ../wasm/module.wasm",
+    "contract-check": "node scripts/contract-check.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "@bytecodealliance/jco": "1.25.2"
+  }
+}
