@@ -11,7 +11,7 @@ the merchant's paid state remains authoritative.
 
 ## Extension details
 
-- ID/version: `popmenu` / `0.1.0`
+- ID/version: `popmenu` / `0.2.0`
 - Admin route: `/ext/popmenu`
 - Public routes: `/ext/popmenu/menu/{menu_id}` and `/ext/popmenu/order/{order_id}`
 - Component: `wasm/module.wasm`
@@ -23,14 +23,15 @@ the merchant's paid state remains authoritative.
 Run from this directory:
 
 ```bash
+rustup target add wasm32-wasip2
 make check
 make build
 make package
 ```
 
-`make build` bundles the JavaScript source and rebuilds the WebAssembly
+`make build` compiles the Rust guest for `wasm32-wasip2` and writes the WebAssembly
 Component with the pinned local `jco` tool. `make package` rebuilds the module,
-creates `dist/popmenu-0.1.0.zip`, and verifies that the archive has one
+creates `dist/popmenu-0.2.0.zip`, and verifies that the archive has one
 top-level `popmenu/` directory, contains the rebuilt component, and excludes
 development files and dependencies.
 

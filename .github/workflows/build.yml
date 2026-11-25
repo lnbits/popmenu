@@ -5,6 +5,7 @@ on:
     paths:
       - 'config.json'
       - 'Makefile'
+      - 'dev/Cargo.*'
       - 'dev/package.json'
       - 'dev/package-lock.json'
       - 'dev/scripts/**'
@@ -20,6 +21,7 @@ on:
     paths:
       - 'config.json'
       - 'Makefile'
+      - 'dev/Cargo.*'
       - 'dev/package.json'
       - 'dev/package-lock.json'
       - 'dev/scripts/**'
@@ -47,6 +49,8 @@ jobs:
       - name: Install dependencies
         run: npm --prefix dev ci
 
+      - run: rustup target add wasm32-wasip2
+
       - name: Check source
         run: make check
 
@@ -62,6 +66,6 @@ jobs:
           node dev/scripts/package-check.mjs
 
       - name: Check generated component exists
-        # jco output can vary across runner toolchains; successful component
+        # Compiler output can vary across runner toolchains; successful component
         # loading and archive hash parity are the reproducibility gates here.
         run: test -s wasm/module.wasm

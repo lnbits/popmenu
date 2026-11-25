@@ -5,7 +5,7 @@ import {dirname, join, resolve} from 'node:path'
 import {fileURLToPath} from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const archive = process.argv[2] || join(root, 'dist', 'popmenu-0.1.0.zip')
+const archive = process.argv[2] || join(root, 'dist', 'popmenu-0.2.0.zip')
 const required = new Set([
   'popmenu/README.md', 'popmenu/config.json', 'popmenu/wasm/module.wasm',
   'popmenu/wasm/lnbits-extension.wit', 'popmenu/wasm/openapi.json',

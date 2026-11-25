@@ -3,10 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "bundle": "node scripts/bundle.mjs",
-    "build": "npm run bundle && jco componentize dist/index.bundle.js --disable all --enable clocks --enable random --enable stdio --wit ../wasm/lnbits-extension.wit --world-name popmenu -o ../wasm/module.wasm",
+    "build": "node scripts/build-wasm.mjs",
     "contract-check": "node scripts/contract-check.mjs",
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "pretest": "jco transpile ../wasm/module.wasm --instantiation sync --no-wasi-shim --name guest -o target/test-component"
   },
   "devDependencies": {
     "@bytecodealliance/jco": "1.25.2"

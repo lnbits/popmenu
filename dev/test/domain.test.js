@@ -1,13 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {createDomain, decimalAdd, decimalCompare, decimalMultiply, decimalString} from '../src/domain.js'
-
-test('decimal helpers stay exact without relying on engine BigInt support', () => {
-  assert.equal(decimalString('0000000000001.23000000'), '1.23')
-  assert.equal(decimalAdd('99999999999999999999.99999999', '0.00000001'), '100000000000000000000')
-  assert.equal(decimalMultiply('12345678901234567890.12345678', 99), '1222222211222222221122.22222122')
-  assert.equal(decimalCompare('10.00000000', '9.99999999'), 1)
-})
+import {createDomain} from './guest.mjs'
 
 function fakeHost() {
   const tables = {menus: new Map(), items: new Map(), orders: new Map(), payment_attempts: new Map(), settlements: new Map()}
