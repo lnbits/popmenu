@@ -12,7 +12,7 @@ syntax:
 	node --check static/admin.js
 	node --check static/public.js
 
-test:
+test: build
 	cd dev && npm test
 
 build:
