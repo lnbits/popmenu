@@ -2,7 +2,7 @@
   "id": "popmenu",
   "name": "PopMenu",
   "short_description": "A lightweight QR menu, Lightning checkout, and order queue.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "extension_type": "wasm",
   "wasm": {
     "module": "wasm/module.wasm",

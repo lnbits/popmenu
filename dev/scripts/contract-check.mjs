@@ -34,7 +34,7 @@ try {
   failures.push(`wasm/lnbits-extension.wit: ${error.message}`);
 }
 try {
-  source = await readFile(resolve(root, "dev/src/index.js"), "utf8");
+  source = await readFile(resolve(root, "dev/src/lib.rs"), "utf8");
 } catch {
   // The contract scaffold is valid before the implementation source exists.
 }
@@ -55,11 +55,8 @@ if (config) {
   const eventExport = config.events?.onInvoicePaid;
   assert(eventExport && exportsByName.get(eventExport) === "event", "onInvoicePaid must target an event export");
   if (source !== null) {
-    const sourceExports = new Set([...source.matchAll(/\bexport\s+function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map((match) => match[1]));
-    const kebabToCamel = (name) => name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
-    for (const exportName of exportNames) {
-      const sourceName = kebabToCamel(exportName);
-      assert(sourceExports.has(sourceName), `configured export is missing from dev/src/index.js: ${sourceName}`);
+    for (const name of exportNames) {
+      assert(source.includes(name.replaceAll("-", "_")), "configured export is missing from Rust routes: " + name);
     }
   }
   for (const route of config.api_routes ?? []) {

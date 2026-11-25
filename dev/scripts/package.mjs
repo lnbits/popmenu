@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url'
 import {tmpdir} from 'node:os'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const version = '0.1.0'
+const version = '0.2.0'
 const output = join(root, 'dist', `popmenu-${version}.zip`)
 const files = [
   'README.md', 'config.json',
